@@ -51,4 +51,24 @@ def follow(request):
     serializer = userFollowingSerializer(follower_people, many= True)
     return Response(serializer.data)
 
+@api_view(['GET''POST'])
+@permission_classes([IsAuthenticated])
+def user_tweet_like(request, tweet_id, *args, **kwargs):
+    
+    if request.method == 'GET':
+        user_detail = user_detail.objects.filter(request.user).likes.all()
+        serializer = user_detailSerializer(user_detail, many=True)
+        return Response(serializer.data.count())
+
+    elif request.method == 'POST':
+        qs = user_detail.object.filter(id=request.User)
+        if not qs.exit():
+            return Response({}, status=404)
+        obj = qs.first()
+        if request.user_id in obj.likes.all():
+            obj.likes.remove(request.user_id)
+        else:
+            obj.likes.add(request.user_id)
+        return Response({"message": "tweet removed"}, status=200)
+
 
